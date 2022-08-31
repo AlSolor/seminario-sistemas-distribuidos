@@ -21,6 +21,7 @@ def read_words(fname):
   """
   Just read a bunch of words from a file.
   """
+
   result = []
   with open(fname, 'r') as f:
     for word in f:
@@ -39,7 +40,9 @@ def run(words):
   the records.
   """
   my_hash = CHash()
+  modhash = ModHash()
   my_store = Store(my_hash)
+  mod_store = Store(modhash)
   
   
   """
@@ -48,15 +51,20 @@ def run(words):
   my_store.add_node("Node 1")
   my_store.add_node("Node 2")
   my_store.add_node("Node 3")
+
+  mod_store.add_node("Node 1")
+  mod_store.add_node("Node 2")
+  mod_store.add_node("Node 3")
   
   my_store.dump()
-  
+  mod_store.dump()
 
   """
   Save all words in the Store
   """
   for word in words:
       my_store.add_resource(word)
+      mod_store.add_resource(word)
   
   my_store.dump()
 
@@ -80,7 +88,7 @@ def run(words):
 
 if __name__ == '__main__':
 
-  words = read_words('words_alpha.txt')
+  words = read_words('consistent_hash/words_alpha.txt')
   words = words[:100]
 
   run(words)

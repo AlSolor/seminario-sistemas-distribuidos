@@ -57,26 +57,42 @@ class Store:
         consistent hash. You may need to adjust it to make it work with modular
         hash. Hash_generator has a member "scheme_name" that you can use.
         """
-        prev_node = self.hash_generator.hash(new_node)
+        ##Funciona para CHash unicamente
+        if self.hash_generator.get_name() == "Consistent_Hash":
+            prev_node = self.hash_generator.hash(new_node)
 
-        rc = self.hash_generator.add_node(new_node)
-        if rc == 0:
+            rc = self.hash_generator.add_node(new_node)
+            if rc == 0:
+                self.nodes[new_node] = Node(new_node)
+
+                """
+                If there is a node in the counter clockwise direction, then the
+                resources stored in that node need to be rebalanced (removed from a
+                node and added to another one).
+                """
+                if prev_node is not None:
+                    resources = self.nodes[prev_node].resources.copy()
+
+                    for element in resources:
+                        target_node = self.hash_generator.hash(element)
+
+                        if target_node is not None and target_node != prev_node:
+                            self.nodes[prev_node].resources.remove(element)
+                            self.nodes[target_node].resources.append(element)
+        else:
+            prev_node = self.hash_generator.hash(new_node)
+            #Añade un nodo
+            self.hash_generator.add_node(new_node)
             self.nodes[new_node] = Node(new_node)
+            #Copia lo que esta en el nodo que se eliminó
+            resources = self.nodes.copy()
+            for element in resources:
+                target_node = self.hash_generator.hash(element)
 
-            """
-            If there is a node in the counter clockwise direction, then the
-            resources stored in that node need to be rebalanced (removed from a
-            node and added to another one).
-            """
-            if prev_node is not None:
-                resources = self.nodes[prev_node].resources.copy()
+                if target_node is not None and target_node!=0:
+                    self.nodes[prev_node].resources.remove(element)
+                    self.nodes[target_node].resources.append(element)
 
-                for element in resources:
-                    target_node = self.hash_generator.hash(element)
-
-                    if target_node is not None and target_node != prev_node:
-                        self.nodes[prev_node].resources.remove(element)
-                        self.nodes[target_node].resources.append(element)
 
     def remove_node(self, node):
         """
@@ -88,10 +104,16 @@ class Store:
         consistent hash. You may need to adjust it to make it work with modular
         hash. Hash_generator has a member "scheme_name" that you can use.
         """
-        rc = self.hash_generator.remove_node(node)
-        if rc == 0:
+        if self.hash_generator.get_name() == "Consistent_Hash":
+            rc = self.hash_generator.remove_node(node)
+            if rc == 0:
+                for element in self.nodes[node].resources:
+                    self.add_resource(element)
+                del self.nodes[node]
+        else:
+            self.hash_generator.remove_node(node)
             for element in self.nodes[node].resources:
-                self.add_resource(element)
+                    self.add_resource(element)
             del self.nodes[node]
 
     def add_resource(self, res):

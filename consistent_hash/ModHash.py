@@ -21,16 +21,19 @@ class ModHash(HashScheme):
         You have to decide what members to add to the class
         """
         self.__scheme_name = 'Modular_Hash'
+        self.nodes = {}
         pass
 
     def get_name(self):
         return self.__scheme_name
 
+
     def dump(self):
         """
         Auxiliary method to print out information about the hash
         """
-        pass
+        for k in self.nodes.keys():
+            print ("Node: {0} hash: {1}".format(self.nodes[k], k))
 
     def add_node(self, new_node):
         """
@@ -38,6 +41,12 @@ class ModHash(HashScheme):
         need to update Store to react in certain way depending on the
         scheme_name.
         """
+        #Funcion para agregar un nodo. Se revisa si ya existe esa llave o no
+        hash_value = self.hash(new_node)
+        if hash_value not in self.nodes.keys():
+            self.nodes[hash_value] = new_node
+            return 0
+        return 1
         pass
 
     def remove_node(self, node):
@@ -52,4 +61,7 @@ class ModHash(HashScheme):
         """
         Convert value to a number representation and then obtain mod(number_of_nodes)
         """
+        if len(self.nodes) == 0:
+            return int(hashlib.md5(value.encode()).hexdigest(),16)    
+        return int(hashlib.md5(value.encode()).hexdigest(),16) % len(self.nodes)
         pass
