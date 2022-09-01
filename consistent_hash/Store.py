@@ -92,6 +92,7 @@ class Store:
                 if target_node is not None and target_node!=0:
                     self.nodes[prev_node].resources.remove(element)
                     self.nodes[target_node].resources.append(element)
+                    print()
 
 
     def remove_node(self, node):
