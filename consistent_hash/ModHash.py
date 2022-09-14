@@ -62,6 +62,6 @@ class ModHash(HashScheme):
         Convert value to a number representation and then obtain mod(number_of_nodes)
         """
         if len(self.nodes) == 0:
-            return None   
+            return None 
         return int(hashlib.md5(value.encode()).hexdigest(),16) % len(self.nodes)
         pass
